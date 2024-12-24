@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { API_KEY } from "../api";
+//import { API_KEY } from "../api";
 import backgroundImage1 from "../images/pexels-photo.jpeg";
 import Header from "./Header";
 import backgroundImage2 from "../images/explorer.webp";
@@ -10,6 +10,11 @@ function Content() {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  
+ const API_KEY = "ecbf9630";
+
+  
 
   const searchHandler = () => {
     if (!searchValue.trim()) {
