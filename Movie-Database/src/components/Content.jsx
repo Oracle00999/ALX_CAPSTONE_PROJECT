@@ -1,343 +1,150 @@
-// import React, { useState, useEffect } from "react";
-// import {
-//   BrowserRouter as Router,
-//   Routes,
-//   Route,
-//   useNavigate,
-//   useParams,
-// } from "react-router-dom";
-
-// const App = () => (
-//   <Router>
-//     <Routes>
-//       <Route path="/" element={<Home />} />
-//       <Route path="/details/:movieId" element={<Details />} />
-//     </Routes>
-//   </Router>
-// );
-
-// // Fetch Movies API
-// const fetchMovies = async (query) => {
-//   const response = await fetch(
-//     `https://www.omdbapi.com/?s=${query}&apikey=ecbf9630`
-//   );
-//   const data = await response.json();
-//   return data.Search;
-// };
-
-// // Fetch Movie Details API
-// const fetchMovieDetails = async (movieId) => {
-//   const response = await fetch(
-//     `https://www.omdbapi.com/?i=${movieId}&apikey=ecbf9630`
-//   );
-//   const data = await response.json();
-//   return data;
-// };
-
-// // Home Component
-// const Home = () => {
-//   const [movies, setMovies] = useState([]);
-//   const [error, setError] = useState(null);
-//   const navigate = useNavigate();
-
-//   const handleSearch = async (query) => {
-//     try {
-//       const results = await fetchMovies(query);
-//       if (results) {
-//         setMovies(results);
-//         setError(null);
-//       } else {
-//         setMovies([]);
-//         setError("No results found.");
-//       }
-//     } catch {
-//       setError("An error occurred while fetching data.");
-//     }
-//   };
-
-//   return (
-//     <div className="p-4">
-//       <SearchBar onSearch={handleSearch} />
-//       {error && <p className="text-red-500 mt-4">{error}</p>}
-//       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-//         {movies.map((movie) => (
-//           <MovieCard
-//             key={movie.imdbID}
-//             movie={movie}
-//             onClick={() => navigate(`/details/${movie.imdbID}`)}
-//           />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// // Details Component
-// const Details = () => {
-//   const { movieId } = useParams();
-//   const [movie, setMovie] = useState(null);
-
-//   useEffect(() => {
-//     const getMovieDetails = async () => {
-//       const data = await fetchMovieDetails(movieId);
-//       setMovie(data);
-//     };
-
-//     getMovieDetails();
-//   }, [movieId]);
-
-//   if (!movie) return <p>Loading...</p>;
-
-//   return <MovieDetails movie={movie} />;
-// };
-
-// // SearchBar Component
-// const SearchBar = ({ onSearch }) => {
-//   const [query, setQuery] = useState("");
-
-//   const handleSearch = () => {
-//     if (query) onSearch(query);
-//   };
-
-//   return (
-//     <div className="flex items-center">
-//       <input
-//         type="text"
-//         value={query}
-//         onChange={(e) => setQuery(e.target.value)}
-//         placeholder="Search for a movie..."
-//         className="border p-2 rounded"
-//       />
-//       <button
-//         onClick={handleSearch}
-//         className="bg-blue-500 text-white p-2 ml-2 rounded"
-//       >
-//         Search
-//       </button>
-//     </div>
-//   );
-// };
-
-// // MovieCard Component
-// const MovieCard = ({ movie, onClick }) => (
-//   <div
-//     className="border rounded p-4 hover:shadow-lg cursor-pointer"
-//     onClick={onClick}
-//   >
-//     <img
-//       src={movie.Poster}
-//       alt={movie.Title}
-//       className="w-full h-64 object-cover"
-//     />
-//     <h2 className="text-lg font-bold mt-2">{movie.Title}</h2>
-//     <p>{movie.Year}</p>
-//   </div>
-// );
-
-// // MovieDetails Component
-// const MovieDetails = ({ movie }) => (
-//   <div className="p-4">
-//     <img
-//       src={movie.Poster}
-//       alt={movie.Title}
-//       className="w-full h-96 object-cover"
-//     />
-//     <h1 className="text-2xl font-bold mt-4">{movie.Title}</h1>
-//     <p className="mt-2">{movie.Plot}</p>
-//     <p>
-//       <strong>Cast:</strong> {movie.Actors}
-//     </p>
-//     <p>
-//       <strong>Genre:</strong> {movie.Genre}
-//     </p>
-//     <p>
-//       <strong>Ratings:</strong>
-//     </p>
-//     <ul>
-//       {movie.Ratings?.map((rating, index) => (
-//         <li key={index}>
-//           {rating.Source}: {rating.Value}
-//         </li>
-//       ))}
-//     </ul>
-//   </div>
-// );
-
-// export default App;
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import "./App.css"; // Import Tailwind styles
+import { API_KEY } from "../api";
+import Header from "./Header";
+import backgroundImage2 from "../images/explorer.webp";
 
-const API_KEY = "74ec535f";
-
-// SearchBar Component
-const SearchBar = ({ searchValue, setSearchValue, onSearch }) => {
-  return (
-    <div className="flex flex-col items-center mb-6">
-      <input
-        type="text"
-        placeholder="Search for movies..."
-        className="p-2 rounded border text-black border-gray-300 w-80 mb-2"
-        value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
-      />
-      <button
-        onClick={onSearch}
-        className="bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Search
-      </button>
-    </div>
-  );
-};
-
-// MovieCard Component
-const MovieCard = ({ movie }) => {
-  return (
-    <div className="bg-gray-800 text-black rounded shadow-lg p-4 w-60">
-      <img
-        src={
-          movie.Poster !== "N/A"
-            ? movie.Poster
-            : "https://via.placeholder.com/150"
-        }
-        alt={movie.Title}
-        className="rounded mb-4"
-      />
-      <h3 className="text-lg font-bold mb-2">{movie.Title}</h3>
-      <p className="text-sm">Year: {movie.Year}</p>
-    </div>
-  );
-};
-
-// MovieDetails Component
-const MovieDetails = ({ movie }) => {
-  return (
-    <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">{movie.Title}</h2>
-      <img
-        src={
-          movie.Poster !== "N/A"
-            ? movie.Poster
-            : "https://via.placeholder.com/300"
-        }
-        alt={movie.Title}
-        className="rounded mb-4"
-      />
-      <p>
-        <strong>Plot:</strong> {movie.Plot}
-      </p>
-      <p>
-        <strong>Director:</strong> {movie.Director}
-      </p>
-      <p>
-        <strong>Actors:</strong> {movie.Actors}
-      </p>
-      <p>
-        <strong>Genre:</strong> {movie.Genre}
-      </p>
-      <p>
-        <strong>IMDB Rating:</strong> {movie.imdbRating}
-      </p>
-      <p>
-        <strong>Released:</strong> {movie.Released}
-      </p>
-    </div>
-  );
-};
-
-// Main App Component
-const App = () => {
+function Content() {
   const [searchValue, setSearchValue] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const fetchMovies = async () => {
+  const searchHandler = () => {
     if (!searchValue.trim()) {
       setError("Please enter a movie name.");
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setSelectedMovie(null);
+    setLoading(true); // Set loading to true before API call
+    setError(""); // Clear any previous errors
 
-    try {
-      const response = await axios.get(
-        `https://www.omdbapi.com/?s=${searchValue}&apikey=${API_KEY}`
-      );
+    axios({
+      method: "GET",
+      url: `https://www.omdbapi.com/?t=${searchValue}&apiKey=${API_KEY}`,
+    })
+      .then((response) => {
+        if (response.data.Response === "False") {
+          setError(response.data.Error); // API error message
+          setData(null);
+        } else {
+          setData(response.data);
+        }
+      })
+      .catch(() => {
+        setError("An error occurred while fetching data.");
+        setData(null);
+      })
+      .finally(() => {
+        setLoading(false); // Stop loading after the API call is complete
+      });
 
-      if (response.data.Response === "True") {
-        setMovies(response.data.Search);
-      } else {
-        setError(response.data.Error);
-        setMovies([]);
-      }
-    } catch (err) {
-      setError("An error occurred while fetching movies.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMovieDetails = async (movieId) => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await axios.get(
-        `https://www.omdbapi.com/?i=${movieId}&apikey=${API_KEY}`
-      );
-
-      if (response.data.Response === "True") {
-        setSelectedMovie(response.data);
-      } else {
-        setError(response.data.Error);
-      }
-    } catch (err) {
-      setError("An error occurred while fetching movie details.");
-    } finally {
-      setLoading(false);
-    }
+    setSearchValue("");
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      <h1 className="text-center text-4xl font-bold mb-8">Movie Database</h1>
+    <div
+      className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white flex flex-col items-center"
+      style={{
+        backgroundImage: `url(${backgroundImage2})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* Header Section */}
+      <Header />
 
-      {/* Search Bar */}
-      <SearchBar
-        searchValue={searchValue}
-        setSearchValue={setSearchValue}
-        onSearch={fetchMovies}
-      />
+      {/* Search Section */}
+      <div className="w-full flex flex-col items-center justify-center py-12 px-4 sm:px-8 bg-black bg-opacity-60 rounded-lg shadow-lg backdrop-blur-lg">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-400 mb-6 text-center">
+          Search for Your Favorite Movies
+        </h1>
+        <input
+          type="text"
+          placeholder="Type A Movie Name..."
+          className="text-lg sm:text-xl mb-4 outline-none rounded-full p-4 w-full sm:w-[80%] md:w-[40%] bg-gray-800 text-white placeholder-gray-400 focus:ring-4 focus:ring-blue-500 transition-all"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
+        <button
+          className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:scale-105 transition-transform duration-200"
+          onClick={searchHandler}
+        >
+          Search
+        </button>
+      </div>
 
-      {/* Loading and Error Messages */}
-      {loading && <p className="text-center">Loading...</p>}
-      {error && <p className="text-center text-red-500">{error}</p>}
-
-      {/* Movie List */}
-      {!loading && !selectedMovie && movies.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-          {movies.map((movie) => (
-            <div
-              key={movie.imdbID}
-              onClick={() => fetchMovieDetails(movie.imdbID)}
-              className="cursor-pointer"
-            >
-              <MovieCard movie={movie} />
-            </div>
-          ))}
+      {/* Error Message */}
+      {error && (
+        <div className="text-center text-red-500 font-bold mt-4 text-sm sm:text-base">
+          {error}
         </div>
       )}
 
-      {/* Movie Details */}
-      {!loading && selectedMovie && <MovieDetails movie={selectedMovie} />}
+      {/* Loading Indicator */}
+      {loading && (
+        <div className="text-center text-gray-400 font-bold mt-4 text-sm sm:text-base">
+          Loading...
+        </div>
+      )}
+
+      {/* Movie Data Display */}
+      {data && !loading && (
+        <div className="mt-12 w-full flex flex-col md:flex-row items-center justify-center text-white font-medium gap-8 px-4 sm:px-8">
+          {/* Movie Poster */}
+          <div className="w-full md:w-auto">
+            <img
+              src={data.Poster}
+              alt={data.Title}
+              className="border border-gray-700 rounded-lg max-w-[80%] md:max-w-none sm:w-[70%] md:w-auto mx-auto shadow-lg transform hover:scale-105 transition-transform"
+            />
+          </div>
+
+          {/* Movie Details */}
+          <div className="w-full md:w-[60%] p-6 text-sm sm:text-base md:text-lg bg-black bg-opacity-70 rounded-xl shadow-xl backdrop-blur-lg">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-blue-400">
+              {data.Title}
+            </h1>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Director:</span>{" "}
+              {data.Director}
+            </p>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Country:</span>{" "}
+              {data.Country}
+            </p>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Genre:</span>{" "}
+              {data.Genre}
+            </p>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Language:</span>{" "}
+              {data.Language}
+            </p>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Plot:</span> {data.Plot}
+            </p>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Actors:</span>{" "}
+              {data.Actors}
+            </p>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Rating:</span>{" "}
+              {data.imdbRating}
+            </p>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Year:</span> {data.Year}
+            </p>
+            <p className="mb-2">
+              <span className="font-bold text-gray-300">Released:</span>{" "}
+              {data.Released}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
+}
 
-export default App;
+export default Content;
