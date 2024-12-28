@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { API_KEY } from "../api";
 import Header from "./Header";
-import backgroundImage2 from "../images/explorer.webp";
+import backgroundImage4 from "../images/explorer3.webp";
 
 function Content() {
   const [searchValue, setSearchValue] = useState("");
@@ -75,7 +75,7 @@ function Content() {
     <div
       className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white flex flex-col items-center"
       style={{
-        backgroundImage: `url(${backgroundImage2})`,
+        backgroundImage: `url(${backgroundImage4})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -115,7 +115,7 @@ function Content() {
 
       {/* Loading Indicator */}
       {loading && (
-        <div className="text-center text-gray-400 font-bold mt-4 text-sm sm:text-base">
+        <div className="text-center text-gray-900 font-bold mt-4 text-sm sm:text-base">
           Loading...
         </div>
       )}
