@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { API_KEY } from "../api";
 import Header from "./Header";
-import backgroundImage4 from "../images/explorer3.webp";
+import backgroundImage4 from "../images/movieimg.avif";
 
 function Content() {
   const [searchValue, setSearchValue] = useState("");
@@ -73,7 +73,7 @@ function Content() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white flex flex-col items-center"
+      className="min-h-screen bg-gradient-to-b from-navy-900 via-gray-900 to-navy-900 text-white flex flex-col items-center"
       style={{
         backgroundImage: `url(${backgroundImage4})`,
         backgroundSize: "cover",
@@ -86,59 +86,63 @@ function Content() {
 
       {/* Search Section */}
       {!selectedMovie && (
-        <div className="w-full flex flex-col items-center justify-center py-12 px-4 sm:px-8 bg-black bg-opacity-60 rounded-lg shadow-lg backdrop-blur-lg">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-400 mb-6 text-center">
+        <div className="w-full flex flex-col items-center justify-center py-12 px-4 sm:px-8 bg-navy-800 bg-opacity-80 rounded-lg shadow-2xl backdrop-blur-lg border border-gold-500/20">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-gold-400 mb-6 text-center font-cinematic">
             Search for Your Favorite Movies
           </h1>
           <input
             type="text"
             placeholder="Type A Movie Name..."
-            className="text-lg sm:text-xl mb-4 outline-none rounded-full p-4 w-full sm:w-[80%] md:w-[40%] bg-gray-800 text-white placeholder-gray-400 focus:ring-4 focus:ring-blue-500 transition-all"
+            className="text-lg sm:text-xl mb-4 outline-none rounded-full p-4 w-full sm:w-[80%] md:w-[40%] bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-all border-2 border-gray-700"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && searchHandler()}
           />
           <button
-            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:scale-105 transition-transform duration-200"
+            className="bg-gradient-to-r from-gold-500 to-gold-600 text-navy-900 font-bold py-3 px-8 rounded-full shadow-lg hover:scale-105 transition-transform duration-200 hover:shadow-gold-500/25"
             onClick={searchHandler}
           >
-            Search
+            Search Movies
           </button>
         </div>
       )}
 
       {/* Error Message */}
       {error && (
-        <div className="text-center text-red-500 font-bold mt-4 text-sm sm:text-base">
+        <div className="text-center text-red-400 font-bold mt-4 text-sm sm:text-base bg-navy-800 bg-opacity-80 p-4 rounded-lg">
           {error}
         </div>
       )}
 
       {/* Loading Indicator */}
       {loading && (
-        <div className="text-center text-gray-900 font-bold mt-4 text-sm sm:text-base">
-          Loading...
+        <div className="text-center text-gold-400 font-bold mt-4 text-sm sm:text-base bg-navy-800 bg-opacity-80 p-4 rounded-lg">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gold-400 mr-3"></div>
+            Loading...
+          </div>
         </div>
       )}
 
       {/* Movies List */}
       {!selectedMovie && data && !loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12 px-4 sm:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12 px-4 sm:px-8 w-full max-w-7xl">
           {data.map((movie) => (
             <div
               key={movie.imdbID}
-              className="bg-black bg-opacity-70 p-4 rounded-lg shadow-lg text-center hover:scale-105 transition-transform"
+              className="bg-gray-800 bg-opacity-90 p-4 rounded-lg shadow-xl text-center hover:scale-105 transition-transform duration-300 border border-gold-500/10 hover:border-gold-500/30"
             >
               <img
                 src={movie.Poster !== "N/A" ? movie.Poster : "placeholder.jpg"}
                 alt={movie.Title}
-                className="w-full h-64 object-cover rounded-lg mb-4"
+                className="w-full h-64 object-cover rounded-lg mb-4 shadow-lg"
               />
-              <h2 className="text-lg font-bold text-blue-400 mb-2">
+              <h2 className="text-lg font-bold text-gold-300 mb-2 line-clamp-2">
                 {movie.Title}
               </h2>
-              <p className="text-gray-300 mb-2">Year: {movie.Year}</p>
+              <p className="text-gray-300 mb-4">Year: {movie.Year}</p>
               <button
-                className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                className="bg-gold-500 text-navy-900 font-semibold py-2 px-4 rounded-lg hover:bg-gold-400 transition-colors w-full"
                 onClick={() => viewDetailsHandler(movie.imdbID)}
               >
                 View Details
@@ -151,37 +155,63 @@ function Content() {
       {/* Movie Details View */}
       {selectedMovie && !loading && (
         <div className="mt-12 w-full flex flex-col items-center text-white font-medium px-4 sm:px-8">
-          <div className="w-full max-w-3xl bg-black bg-opacity-70 p-6 rounded-lg shadow-lg">
-            <img
-              src={selectedMovie.Poster}
-              alt={selectedMovie.Title}
-              className="w-full h-96 object-cover rounded-lg mb-4"
-            />
-            <h1 className="text-2xl font-bold text-blue-400 mb-4">
-              {selectedMovie.Title}
-            </h1>
-            <p className="mb-2">
-              <span className="font-bold text-gray-300">Director:</span>{" "}
-              {selectedMovie.Director}
-            </p>
-            <p className="mb-2">
-              <span className="font-bold text-gray-300">Genre:</span>{" "}
-              {selectedMovie.Genre}
-            </p>
-            <p className="mb-2">
-              <span className="font-bold text-gray-300">Plot:</span>{" "}
-              {selectedMovie.Plot}
-            </p>
-            <p className="mb-2">
-              <span className="font-bold text-gray-300">Actors:</span>{" "}
-              {selectedMovie.Actors}
-            </p>
-            <button
-              className="mt-6 bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-600"
-              onClick={goBackHandler}
-            >
-              Go Back
-            </button>
+          <div className="w-full max-w-4xl bg-gray-800 bg-opacity-90 p-8 rounded-lg shadow-2xl border border-gold-500/20">
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="md:w-1/3">
+                <img
+                  src={
+                    selectedMovie.Poster !== "N/A"
+                      ? selectedMovie.Poster
+                      : "placeholder.jpg"
+                  }
+                  alt={selectedMovie.Title}
+                  className="w-full h-96 object-cover rounded-lg shadow-lg"
+                />
+              </div>
+              <div className="md:w-2/3">
+                <h1 className="text-3xl font-bold text-gold-300 mb-4 font-cinematic">
+                  {selectedMovie.Title}
+                </h1>
+                <div className="space-y-3">
+                  <p className="mb-2">
+                    <span className="font-bold text-gold-200">Year:</span>{" "}
+                    <span className="text-gray-200">{selectedMovie.Year}</span>
+                  </p>
+                  <p className="mb-2">
+                    <span className="font-bold text-gold-200">Director:</span>{" "}
+                    <span className="text-gray-200">
+                      {selectedMovie.Director}
+                    </span>
+                  </p>
+                  <p className="mb-2">
+                    <span className="font-bold text-gold-200">Genre:</span>{" "}
+                    <span className="text-gray-200">{selectedMovie.Genre}</span>
+                  </p>
+                  <p className="mb-2">
+                    <span className="font-bold text-gold-200">Rating:</span>{" "}
+                    <span className="text-gray-200">
+                      {selectedMovie.imdbRating}/10
+                    </span>
+                  </p>
+                  <p className="mb-2">
+                    <span className="font-bold text-gold-200">Actors:</span>{" "}
+                    <span className="text-gray-200">
+                      {selectedMovie.Actors}
+                    </span>
+                  </p>
+                  <p className="mb-4">
+                    <span className="font-bold text-gold-200">Plot:</span>{" "}
+                    <span className="text-gray-200">{selectedMovie.Plot}</span>
+                  </p>
+                </div>
+                <button
+                  className="bg-gold-500 text-navy-900 font-bold py-3 px-8 rounded-lg hover:bg-gold-400 transition-colors mt-4"
+                  onClick={goBackHandler}
+                >
+                  ← Back to Results
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
